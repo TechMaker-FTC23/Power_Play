@@ -28,6 +28,7 @@ public class LocalizationTest extends LinearOpMode {
 
         elevatorMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevatorMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         waitForStart();
 
         while (!isStopRequested()) {
@@ -38,12 +39,12 @@ public class LocalizationTest extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
-            if(gamepad1.y && elevatorMotor.getCurrentPosition()<3200) {
-                elevatorMotor.setPower(0.5);
+            if(gamepad1.y && elevatorMotor.getCurrentPosition()<5) {
+                elevatorMotor.setPower(-0.5);
                 telemetry.addData("Elevador","subindo");
             }
-            else if(gamepad1.a && elevatorMotor.getCurrentPosition()>80) {
-                elevatorMotor.setPower(-0.5);
+            else if(gamepad1.x && elevatorMotor.getCurrentPosition()>-2000) {
+                elevatorMotor.setPower(0.5);
                 telemetry.addData("Elevador","Descendo");
             }
             else{
