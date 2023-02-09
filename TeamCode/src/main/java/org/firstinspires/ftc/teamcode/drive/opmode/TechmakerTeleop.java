@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -16,6 +17,8 @@ public class TechmakerTeleop extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         DcMotor elevator;
+        Servo intake1 = hardwareMap.get(Servo.class,"servoleft");
+        Servo intake2 = hardwareMap.get(Servo.class,"servoright");
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         elevator = hardwareMap.get(DcMotor.class,"elevatormotor");
         elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -27,22 +30,24 @@ public class TechmakerTeleop extends LinearOpMode {
             drive.setWeightedDrivePower(
                     new Pose2d(-gamepad1.left_stick_y,-gamepad1.left_stick_x,-gamepad1.right_stick_x));
             if(gamepad1.a) {
-                elevator_position = 1700;
-            }
-            if(gamepad1.b)
-                elevator_position = 0;
-
-            if(elevator.getCurrentPosition()>elevator_position){
                 elevator.setPower(-DriveConstants.MAX_VEL_ELEVATOR);
             }
-            else if(elevator.getCurrentPosition()<elevator_position){
+            else if(gamepad1.b)
                 elevator.setPower((DriveConstants.MAX_VEL_ELEVATOR));
-            }
+
+
             else
             {
                 elevator.setPower(0);
             }
-
+            if(gamepad1.x){
+                intake2.setPosition(2);
+                intake1.setPosition(0);
+            }
+            if(gamepad1.y){
+                intake2.setPosition(0);
+                intake1.setPosition(2);
+            }
             drive.update();
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("Elevador",elevator.getCurrentPosition());
