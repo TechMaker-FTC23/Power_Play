@@ -32,16 +32,17 @@ public class TechmakerTeleop extends LinearOpMode {
             drive.setWeightedDrivePower(
                     new Pose2d(-gamepad1.left_stick_y,-gamepad1.left_stick_x,-gamepad1.right_stick_x));
             if(gamepad1.a)
-                elevator_position = 0;
+                elevator_position = 200;
 
             if(gamepad1.b)
-                elevator_position = 1700;
+                elevator_position = 1900;
 
 
             if(gamepad1.y)
-                elevator_position = 2750;
+                elevator_position = 3000;
+
             if(gamepad1.x)
-                elevator_position = 3700;
+                elevator_position = 4500;
 
             error = elevator_position-elevator.getCurrentPosition();
 
