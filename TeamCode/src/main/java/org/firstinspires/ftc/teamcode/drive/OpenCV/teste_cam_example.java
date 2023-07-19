@@ -44,6 +44,9 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.firstinspires.ftc.teamcode.drive.TwoWheelTrackingLocalizer;
+
+
 
 
 import java.util.ArrayList;
@@ -51,10 +54,10 @@ import java.util.ArrayList;
 @Autonomous
 public class teste_cam_example extends LinearOpMode
 {
-    DcMotor xMotor;
-    DcMotor yMotor;
-    Encoder xEncoder;
-    Encoder yEncoder;
+    DcMotor rightFront;
+    DcMotor rightRear;
+    Encoder parallelEncoder;
+    Encoder perpendicularEncoder;
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     static final double FEET_PER_METER = 3.28084;
@@ -70,7 +73,6 @@ public class teste_cam_example extends LinearOpMode
     private double          robotHeading  = 0;
     private double          headingOffset = 0;
     private double          headingError  = 0;
-
     // UNITS ARE METERS
     double tagsize = 0.037;
 
@@ -78,11 +80,11 @@ public class teste_cam_example extends LinearOpMode
     int right = 18;
     int middle = 19;
 
+    TwoWheelTrackingLocalizer trackingLocalizer = new TwoWheelTrackingLocalizer();
+
     AprilTagDetection tagOfInterest = null;
     public static final int x1 = 115, x2 = 14, x3 = -5, x4 = 20;
     public static final int y1 = -28,y2 = 28,y3 = 30, yLeft = -33, yMiddle = 30, yRight = 80;
-
-
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -372,22 +374,22 @@ public class teste_cam_example extends LinearOpMode
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
     public void initEncoder(){
-        xMotor = hardwareMap.get(DcMotor.class,"xEncoder");
-        yMotor = hardwareMap.get(DcMotor.class,"yEncoder");
-        xEncoder = new Encoder(hardwareMap.get(DcMotorEx.class,"xEncoder"));
-        yEncoder = new Encoder(hardwareMap.get(DcMotorEx.class,"yEncoder"));
+        rightRear = hardwareMap.get(DcMotor.class,"xEncoder");
+        rightFront = hardwareMap.get(DcMotor.class,"yEncoder");
+        parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class,"xEncoder"));
+        perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class,"yEncoder"));
         resetEncoder();
     }
     public void resetEncoder(){
-        xMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        yMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     public double getXCentimeter(){
-        return xEncoder.getCurrentPosition()*METERS_PER_PULSE;
+        return parallelEncoder.getCurrentPosition()*METERS_PER_PULSE;
 
     }
     public double getYCentimeters(){
-        return yEncoder.getCurrentPosition()*METERS_PER_PULSE;
+        return perpendicularEncoder.getCurrentPosition()*METERS_PER_PULSE;
 
     }
 }
