@@ -186,7 +186,7 @@ public class teste_cam_example extends LinearOpMode
         drive.setPoseEstimate(new Pose2d(0,0,0));
         Pose2d path = new Pose2d(0.4, 0, 0);
         drive.setWeightedDrivePower(path);
-        while (getXCentimeter()<x1)
+        while (getXCentimeter()<Math.abs(x1))
         {
             path = new Pose2d(calculateP(getXCentimeter(),x1),0,0);
             drive.setWeightedDrivePower(path);
@@ -198,24 +198,31 @@ public class teste_cam_example extends LinearOpMode
         sleep(100);
         path = new Pose2d(0,0.4,0);
         drive.setWeightedDrivePower(path);
-        while(getYCentimeters()>y1)
+        int elevatorPosition = 3600;
+        elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevator.setPower(0.7);
+        while(getYCentimeters()<Math.abs(y1))
         {
             path = new Pose2d(0,calculateP(getYCentimeters(),y1),0);
             drive.setWeightedDrivePower(path);
             drive.update();
+            if(elevator.getCurrentPosition()>3600){
+                elevator.setPower(0.02);
+            }
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
-        elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        elevator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         while(elevator.getCurrentPosition()<3600){
             elevator.setPower(0.7);
         }
         elevator.setPower(0.02);
+        resetEncoder();
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
-         while(getXCentimeter()<(x1+x2)){
-             path = new Pose2d(calculateP(getXCentimeter(),x1+x2),0,0);
+         while(getXCentimeter()<Math.abs(x2)){
+             path = new Pose2d(calculateP(getXCentimeter(),x2),0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
         }
@@ -230,7 +237,7 @@ public class teste_cam_example extends LinearOpMode
         path = new Pose2d(-0.4,0,0);
         drive.setWeightedDrivePower(path);
         drive.update();
-        while (getXCentimeter()>(x3)){
+        while (getXCentimeter()<Math.abs(x3)){
             elevator.setPower(0);
             path = new Pose2d(calculateP(getXCentimeter(),x3),0,0);
             drive.setWeightedDrivePower(path);
@@ -248,7 +255,7 @@ public class teste_cam_example extends LinearOpMode
         elevator.setPower(0);
         path = new Pose2d(0,-0.4,0);
         drive.setWeightedDrivePower(path);
-        while (getYCentimeters()<(y2)){
+        while (getYCentimeters()<Math.abs(y2)){
             path = new Pose2d(0,calculateP(getYCentimeters(),y2),0);
             drive.setWeightedDrivePower(path);
             drive.update();
@@ -359,7 +366,7 @@ public class teste_cam_example extends LinearOpMode
 
     public double calculateP(double encoder, double set){
         double error = (Math.abs(set)-Math.abs(encoder))/Math.abs(set*1.5)+0.2;
-        Math.copySign(error,set);
+        error = Math.copySign(error,set);
         return error;
     }
     /**
@@ -408,11 +415,11 @@ public class teste_cam_example extends LinearOpMode
 
     }
     public double getXCentimeter(){
-        return trackingLocalizer.getParallelPosition()*METERS_PER_PULSE;
+        return Math.abs(trackingLocalizer.getParallelPosition()*METERS_PER_PULSE);
 
     }
     public double getYCentimeters(){
-        return trackingLocalizer.getPerpendicularPosition()*METERS_PER_PULSE;
+        return Math.abs(trackingLocalizer.getPerpendicularPosition()*METERS_PER_PULSE);
 
     }
 
