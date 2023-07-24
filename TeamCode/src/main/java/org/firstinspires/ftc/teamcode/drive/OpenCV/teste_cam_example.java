@@ -226,12 +226,13 @@ public class teste_cam_example extends LinearOpMode
         sleep(2000);
         intake1.setPower(0);
         intake2.setPower(0);
+        resetEncoder();
         path = new Pose2d(-0.4,0,0);
         drive.setWeightedDrivePower(path);
         drive.update();
-        while (getXCentimeter()>(x1+x2+x3)){
+        while (getXCentimeter()>(x3)){
             elevator.setPower(0);
-            path = new Pose2d(calculateP(getXCentimeter(),x1+x2+x3),0,0);
+            path = new Pose2d(calculateP(getXCentimeter(),x3),0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
         }
@@ -243,11 +244,12 @@ public class teste_cam_example extends LinearOpMode
             elevator.setPower(-0.7);
 
         }
+        resetEncoder();
         elevator.setPower(0);
         path = new Pose2d(0,-0.4,0);
         drive.setWeightedDrivePower(path);
-        while (getYCentimeters()<(y1+y2)){
-            path = new Pose2d(0,calculateP(getYCentimeters(),y1+y2),0);
+        while (getYCentimeters()<(y2)){
+            path = new Pose2d(0,calculateP(getYCentimeters(),y2),0);
             drive.setWeightedDrivePower(path);
             drive.update();
         }
