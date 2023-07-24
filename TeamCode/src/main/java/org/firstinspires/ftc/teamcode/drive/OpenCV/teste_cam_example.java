@@ -356,7 +356,7 @@ public class teste_cam_example extends LinearOpMode
     }
 
     public double calculateP(double encoder, double set){
-        double error = (Math.abs(set)-Math.abs(encoder))/Math.abs(set)+0.2;
+        double error = (Math.abs(set)-Math.abs(encoder))/Math.abs(set*1.5)+0.2;
         Math.copySign(error,set);
         return error;
     }
