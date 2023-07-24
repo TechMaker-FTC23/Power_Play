@@ -11,6 +11,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.Encoder;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 @TeleOp(group="drive")
 public class TechmakerTeleop extends LinearOpMode {
@@ -26,11 +29,16 @@ public class TechmakerTeleop extends LinearOpMode {
     DcMotor yMotor;
     Encoder xEncoder;
     Encoder yEncoder;
+    DistanceSensor distance;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         DcMotor elevator;
         DcMotor ledPower = hardwareMap.get(DcMotor.class,"ledPower");
+
+        distance = hardwareMap.get(DistanceSensor.class, "Distance");
+        double Distance = distance.getDistance(DistanceUnit.CM);
+        //distance sensor
 
         CRServo intake1 = hardwareMap.get(CRServo.class,"servoleft");
         CRServo intake2 = hardwareMap.get(CRServo.class,"servoright");
@@ -135,6 +143,7 @@ public class TechmakerTeleop extends LinearOpMode {
             telemetry.addData("y", getYCentimeters());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.addData("Intake", intake1.getPower());
+            telemetry.addData("Distance",Distance);
             telemetry.update();
         }
     }

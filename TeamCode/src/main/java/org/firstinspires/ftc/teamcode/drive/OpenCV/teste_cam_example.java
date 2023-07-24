@@ -32,6 +32,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -53,8 +56,8 @@ import java.util.ArrayList;
 @Autonomous
 public class teste_cam_example extends LinearOpMode
 {
-    DcMotor rightRear;
-    DcMotor leftRear;
+    DcMotor xMotor;
+    DcMotor yMotor;
     Encoder parallelEncoder;
     Encoder perpendicularEncoder;
     OpenCvCamera camera;
@@ -69,10 +72,11 @@ public class teste_cam_example extends LinearOpMode
     double cx = 402.145;
     double cy = 221.506;
     private BNO055IMU imu         = null;      // Control/Expansion Hub IMU
+
     private double          robotHeading  = 0;
     private double          headingOffset = 0;
     private double          headingError  = 0;
-    ;
+
     // UNITS ARE METERS
     double tagsize = 0.037;
 
@@ -80,11 +84,13 @@ public class teste_cam_example extends LinearOpMode
     int right = 18;
     int middle = 19;
 
+    TwoWheelTrackingLocalizer trackingLocalizer = null;
 
 
     AprilTagDetection tagOfInterest = null;
     public static final int x1 = 115, x2 = 14, x3 = -5, x4 = 20;
-    public static final int y1 = -28,y2 = 28,y3 = 30, yLeft = -33, yMiddle = 30, yRight = 80;
+    public static final int y1 = -28,y2 = 28, yLeft = -33, yMiddle = 30, yRight = 80;
+    public double z1 = -23.1125;
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -99,7 +105,7 @@ public class teste_cam_example extends LinearOpMode
         parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        TwoWheelTrackingLocalizer trackingLocalizer = new TwoWheelTrackingLocalizer(hardwareMap, drive );
+        trackingLocalizer = new TwoWheelTrackingLocalizer(hardwareMap, drive );
         initEncoder();
         parallelEncoder = trackingLocalizer.parallelEncoder;
         perpendicularEncoder = trackingLocalizer.perpendicularEncoder;
@@ -182,6 +188,7 @@ public class teste_cam_example extends LinearOpMode
         drive.setWeightedDrivePower(path);
         while (getXCentimeter()<x1)
         {
+            path = new Pose2d(calculateP(getXCentimeter(),x1),0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
 
@@ -193,7 +200,8 @@ public class teste_cam_example extends LinearOpMode
         drive.setWeightedDrivePower(path);
         while(getYCentimeters()>y1)
         {
-            drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
+            path = new Pose2d(0,calculateP(getYCentimeters(),y1),0);
+            drive.setWeightedDrivePower(path);
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
@@ -207,7 +215,8 @@ public class teste_cam_example extends LinearOpMode
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
          while(getXCentimeter()<(x1+x2)){
-            drive.setWeightedDrivePower(new Pose2d(0.4,0,0));
+             path = new Pose2d(calculateP(getXCentimeter(),x1+x2),0,0);
+            drive.setWeightedDrivePower(path);
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
@@ -222,7 +231,8 @@ public class teste_cam_example extends LinearOpMode
         drive.update();
         while (getXCentimeter()>(x1+x2+x3)){
             elevator.setPower(0);
-            drive.setWeightedDrivePower(new Pose2d(-0.4,0,0));
+            path = new Pose2d(calculateP(getXCentimeter(),x1+x2+x3),0,0);
+            drive.setWeightedDrivePower(path);
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
@@ -236,21 +246,43 @@ public class teste_cam_example extends LinearOpMode
         elevator.setPower(0);
         path = new Pose2d(0,-0.4,0);
         drive.setWeightedDrivePower(path);
-        while (getYCentimeters()>(y1+y2)){
-            drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
+        while (getYCentimeters()<(y1+y2)){
+            path = new Pose2d(0,calculateP(getYCentimeters(),y1+y2),0);
+            drive.setWeightedDrivePower(path);
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
-        path = new Pose2d(0,0,-0.4);
-        drive.setWeightedDrivePower(path);
-        while (getRobotHeading()<-0.75)
-        {
-            drive.setWeightedDrivePower(new Pose2d(0,0,-0.4));
-            drive.update();
+        double actualPosition = getYCentimeters();
+        resetEncoder();
+        telemetry.clearAll();
+        telemetry.addData("Encoder",getYCentimeters());
+        telemetry.update();
+        drive.setWeightedDrivePower(new Pose2d(0,0,1.0));
+        double distance = 23.1125;
+        while (getYCentimeters()<distance){
+            double error = (distance-getYCentimeters())/(distance*2)+0.15;
+            drive.setWeightedDrivePower(new Pose2d(0,0,error));
+            telemetry.addData("Encoder",getYCentimeters());
+            telemetry.update();
         }
+        drive.setWeightedDrivePower(new Pose2d(0,0,0));
+        drive.update();
+        sleep(1000);
+        resetEncoder();
+        telemetry.clearAll();
+        telemetry.addData("Encoder",getYCentimeters());
+        telemetry.update();
+        drive.setWeightedDrivePower(new Pose2d(0,0,-0.2));
+        while (getYCentimeters()>-23.1125){
+            double error = (distance-Math.abs(getYCentimeters()))/(distance*2)+0.15;
+            drive.setWeightedDrivePower(new Pose2d(0,0,-error));
+            telemetry.addData("Encoder",getYCentimeters());
+            telemetry.update();
+        }
+        drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
-
+        sleep(10000);
 
 
 
@@ -323,6 +355,11 @@ public class teste_cam_example extends LinearOpMode
         }
     }
 
+    public double calculateP(double encoder, double set){
+        double error = (Math.abs(set)-Math.abs(encoder))/Math.abs(set)+0.2;
+        Math.copySign(error,set);
+        return error;
+    }
     /**
      * read the raw (un-offset Gyro heading) directly from the IMU
      */
@@ -344,6 +381,7 @@ public class teste_cam_example extends LinearOpMode
 
     }
 
+
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
@@ -354,23 +392,27 @@ public class teste_cam_example extends LinearOpMode
         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
+
     public void initEncoder(){
-        rightRear = hardwareMap.get(DcMotor.class,"xEncoder");
-        leftRear = hardwareMap.get(DcMotor.class,"yEncoder");
+        xMotor = hardwareMap.get(DcMotor.class,"xEncoder");
+        yMotor = hardwareMap.get(DcMotor.class,"yEncoder");
         parallelEncoder = new Encoder(hardwareMap.get(DcMotorEx.class,"xEncoder"));
         perpendicularEncoder = new Encoder(hardwareMap.get(DcMotorEx.class,"yEncoder"));
         resetEncoder();
     }
     public void resetEncoder(){
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        xMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        yMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
     }
     public double getXCentimeter(){
-        return parallelEncoder.getCurrentPosition()*METERS_PER_PULSE;
+        return trackingLocalizer.getParallelPosition()*METERS_PER_PULSE;
 
     }
     public double getYCentimeters(){
-        return perpendicularEncoder.getCurrentPosition()*METERS_PER_PULSE;
+        return trackingLocalizer.getPerpendicularPosition()*METERS_PER_PULSE;
 
     }
+
+
 }

@@ -88,7 +88,12 @@ public class TwoWheelTrackingLocalizer extends TwoTrackingWheelLocalizer {
                 encoderTicksToInches(perpendicularEncoder.getCurrentPosition())
         );
     }
-
+    public double getParallelPosition(){
+        return parallelEncoder.getCurrentPosition();
+    }
+    public double getPerpendicularPosition(){
+        return perpendicularEncoder.getCurrentPosition();
+    }
     @NonNull
     @Override
     public List<Double> getWheelVelocities() {
