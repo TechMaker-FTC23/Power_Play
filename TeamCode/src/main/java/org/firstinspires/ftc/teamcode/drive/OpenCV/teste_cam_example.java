@@ -51,6 +51,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.firstinspires.ftc.teamcode.drive.TwoWheelTrackingLocalizer;
 
 
+
 import java.util.ArrayList;
 
 @Autonomous
@@ -61,6 +62,7 @@ public class teste_cam_example extends LinearOpMode
     Encoder parallelEncoder;
     Encoder perpendicularEncoder;
     OpenCvCamera camera;
+    DistanceSensor sensorDistance;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
     static final double FEET_PER_METER = 3.28084;
     // Lens intrinsics
@@ -88,7 +90,7 @@ public class teste_cam_example extends LinearOpMode
 
 
     AprilTagDetection tagOfInterest = null;
-    public static final int x1 = 115, x2 = 14, x3 = -5, x4 = 20;
+    public static final int x1 = 115, x2 = 12, x3 = -5, x4 = 20;
     public static final int y1 = -28,y2 = 28, yLeft = -33, yMiddle = 30, yRight = 80;
     public double z1 = -23.1125;
     @Override
@@ -109,6 +111,8 @@ public class teste_cam_example extends LinearOpMode
         initEncoder();
         parallelEncoder = trackingLocalizer.parallelEncoder;
         perpendicularEncoder = trackingLocalizer.perpendicularEncoder;
+        //Distance sensor
+        sensorDistance = hardwareMap.get(DistanceSensor.class, "Distance");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
@@ -221,6 +225,7 @@ public class teste_cam_example extends LinearOpMode
         resetEncoder();
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
+        drive.update();
          while(getXCentimeter()<Math.abs(x2)){
              path = new Pose2d(calculateP(getXCentimeter(),x2),0,0);
             drive.setWeightedDrivePower(path);
@@ -253,7 +258,7 @@ public class teste_cam_example extends LinearOpMode
         }
         resetEncoder();
         elevator.setPower(0);
-        path = new Pose2d(0,-0.4,0);
+        path = new Pose2d(0,0.4,0);
         drive.setWeightedDrivePower(path);
         while (getYCentimeters()<Math.abs(y2)){
             path = new Pose2d(0,calculateP(getYCentimeters(),y2),0);
@@ -267,8 +272,8 @@ public class teste_cam_example extends LinearOpMode
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
         telemetry.update();
-        drive.setWeightedDrivePower(new Pose2d(0,0,1.0));
-        double distance = 23.1125;
+        drive.setWeightedDrivePower(new Pose2d(0,0,-1.0));
+        double distance = -19.8871;
         while (getYCentimeters()<distance){
             double error = (distance-getYCentimeters())/(distance*2)+0.15;
             drive.setWeightedDrivePower(new Pose2d(0,0,error));
@@ -277,19 +282,28 @@ public class teste_cam_example extends LinearOpMode
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+        resetEncoder();
+        path = new Pose2d(0.4,0,0);
+        drive.setWeightedDrivePower(path);
+        double wallDistance = 20;
+        while (sensorDistance.getDistance(DistanceUnit.CM)<wallDistance){
+            path = new Pose2d(calculateP(getXCentimeter(),wallDistance),0,0);
+            drive.setWeightedDrivePower(path);
+            drive.update();
+        }
         sleep(1000);
         resetEncoder();
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
         telemetry.update();
-        drive.setWeightedDrivePower(new Pose2d(0,0,-0.2));
-        while (getYCentimeters()>-23.1125){
+        drive.setWeightedDrivePower(new Pose2d(0,0,0.2));
+        while (getYCentimeters()>-19.8871){
             double error = (distance-Math.abs(getYCentimeters()))/(distance*2)+0.15;
             drive.setWeightedDrivePower(new Pose2d(0,0,-error));
             telemetry.addData("Encoder",getYCentimeters());
             telemetry.update();
         }
-        drive.setWeightedDrivePower(new Pose2d(0,0,0));
+
 
         sleep(10000);
 

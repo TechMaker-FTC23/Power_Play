@@ -147,6 +147,7 @@ public class TechmakerTeleop extends LinearOpMode {
             telemetry.update();
         }
     }
+
     public void initEncoder(){
         xMotor = hardwareMap.get(DcMotor.class,"xEncoder");
         yMotor = hardwareMap.get(DcMotor.class,"yEncoder");
