@@ -90,8 +90,8 @@ public class teste_cam_example extends LinearOpMode
 
 
     AprilTagDetection tagOfInterest = null;
-    public static final int x1 = 115, x2 = 12, x3 = -5, x4 = 20;
-    public static final int y1 = -28,y2 = 28, yLeft = -33, yMiddle = 30, yRight = 80;
+    public static final int x1 = 115, x2 = 8, x3 = -6, x4 = 20;
+    public static final int y1 = 27,y2 = -28, yLeft = -33, yMiddle = 30, yRight = 80;
     public double z1 = -23.1125;
     @Override
     public void runOpMode() {
@@ -211,7 +211,7 @@ public class teste_cam_example extends LinearOpMode
             path = new Pose2d(0,calculateP(getYCentimeters(),y1),0);
             drive.setWeightedDrivePower(path);
             drive.update();
-            if(elevator.getCurrentPosition()>3600){
+            if(elevator.getCurrentPosition()>elevatorPosition){
                 elevator.setPower(0.02);
             }
         }
@@ -272,11 +272,11 @@ public class teste_cam_example extends LinearOpMode
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
         telemetry.update();
-        drive.setWeightedDrivePower(new Pose2d(0,0,-1.0));
-        double distance = -19.8871;
+        drive.setWeightedDrivePower(new Pose2d(0,0,1.0));
+        double distance = 19.8871;
         while (getYCentimeters()<distance){
             double error = (distance-getYCentimeters())/(distance*2)+0.15;
-            drive.setWeightedDrivePower(new Pose2d(0,0,error));
+            drive.setWeightedDrivePower(new Pose2d(0,0,-error));
             telemetry.addData("Encoder",getYCentimeters());
             telemetry.update();
         }
@@ -286,18 +286,20 @@ public class teste_cam_example extends LinearOpMode
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
         double wallDistance = 20;
-        while (sensorDistance.getDistance(DistanceUnit.CM)<wallDistance){
+        while (sensorDistance.getDistance(DistanceUnit.CM)<Math.abs(wallDistance)){
             path = new Pose2d(calculateP(getXCentimeter(),wallDistance),0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
         }
-        sleep(1000);
+        drive.setWeightedDrivePower(new Pose2d(0,0,0));
+        drive.update();
+        /*sleep(1000);
         resetEncoder();
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
         telemetry.update();
         drive.setWeightedDrivePower(new Pose2d(0,0,0.2));
-        while (getYCentimeters()>-19.8871){
+        while (getYCentimeters()<19.8871){
             double error = (distance-Math.abs(getYCentimeters()))/(distance*2)+0.15;
             drive.setWeightedDrivePower(new Pose2d(0,0,-error));
             telemetry.addData("Encoder",getYCentimeters());
@@ -307,7 +309,7 @@ public class teste_cam_example extends LinearOpMode
 
         sleep(10000);
 
-
+*/
 
 
         //codigo para ir para esquerda colocar o cone
