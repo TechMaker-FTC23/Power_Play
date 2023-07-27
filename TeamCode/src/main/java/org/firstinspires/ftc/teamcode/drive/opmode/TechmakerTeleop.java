@@ -37,7 +37,7 @@ public class TechmakerTeleop extends LinearOpMode {
         DcMotor ledPower = hardwareMap.get(DcMotor.class,"ledPower");
 
         distance = hardwareMap.get(DistanceSensor.class, "Distance");
-        double Distance = distance.getDistance(DistanceUnit.CM);
+        double Distance = distance.getDistance(DistanceUnit.MM);
         //distance sensor
 
         CRServo intake1 = hardwareMap.get(CRServo.class,"servoleft");
@@ -141,7 +141,7 @@ public class TechmakerTeleop extends LinearOpMode {
 
             telemetry.addData("x", getXCentimeter());
             telemetry.addData("y", getYCentimeters());
-            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("heading", getYCentimeters());
             telemetry.addData("Intake", intake1.getPower());
             telemetry.addData("Distance",Distance);
             telemetry.update();
