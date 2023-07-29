@@ -90,7 +90,7 @@ public class teste_cam_example extends LinearOpMode
 
 
     AprilTagDetection tagOfInterest = null;
-    public static final double x1 = 125, x2 = 3, x3 = -6.5, x4 = -85;
+    public static final double x1 = 125, x2 = 3, x3 = -6.5, x4 = -85, x5 = -6;
     public static final double y1 = 24.5, yLeft = -33, yMiddle = 30, yRight = 80;
     @Override
     public void runOpMode() {
@@ -382,7 +382,6 @@ public class teste_cam_example extends LinearOpMode
         path = new Pose2d(-0.4,0,0);
         drive.setWeightedDrivePower(path);
         drive.update();
-        double x5 = -6;
         while (getXCentimeter()<Math.abs(x5)){
             elevator.setPower(0);
             path = new Pose2d(calculateP(getXCentimeter(),x5),0,0);
