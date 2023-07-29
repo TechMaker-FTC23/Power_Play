@@ -90,9 +90,9 @@ public class teste_cam_example extends LinearOpMode
 
 
     AprilTagDetection tagOfInterest = null;
-    public static final double x1 = 127.5, x2 = 6.5, x3 = -7, x4 = -85;
-    public static final double y1 = 27,y2 = -28, yLeft = -33, yMiddle = 30, yRight = 80;
-    public static final double turnDistance1 = 22.23, turnDistance2 = -22.22;
+    public static final double x1 = 126, x2 = 5, x3 = -6.7, x4 = -82;
+    public static final double y1 = 24, yLeft = -33, yMiddle = 30, yRight = 80;
+    public static final double turnDistance = 19.9971;
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -199,8 +199,7 @@ public class teste_cam_example extends LinearOpMode
 
         }
         drive.setWeightedDrivePower(new Pose2d(0, 0, 0));
-
-        sleep(100);
+        resetEncoder();
         path = new Pose2d(0,0.4,0);
         drive.setWeightedDrivePower(path);
         int elevatorPosition = 3600;
@@ -212,8 +211,13 @@ public class teste_cam_example extends LinearOpMode
             path = new Pose2d(0,calculateP(getYCentimeters(),y1),0);
             drive.setWeightedDrivePower(path);
             drive.update();
+            /*if(getXCentimeter()>-0.1){
+                drive.setWeightedDrivePower(new Pose2d(0.1,0,0));
+            }
+            */
             if(elevator.getCurrentPosition()>elevatorPosition){
-                elevator.setPower(0.02);
+                elevator.setPower(0.03);
+
             }
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
@@ -234,8 +238,9 @@ public class teste_cam_example extends LinearOpMode
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
-        intake1.setPower(1);
-        intake2.setPower(-1);
+        sleep(400);
+        intake1.setPower(5);
+        intake2.setPower(-5);
         sleep(2000);
         intake1.setPower(0);
         intake2.setPower(0);
@@ -248,9 +253,13 @@ public class teste_cam_example extends LinearOpMode
             path = new Pose2d(calculateP(getXCentimeter(),x3),0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
+            if(getYCentimeters()>0.1){
+                new Pose2d(0,-0.2,0);
+            }
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+        sleep(500);
         elevator.setPower(-0.7);
         while(elevator.getCurrentPosition()>1200)
         {
@@ -259,20 +268,32 @@ public class teste_cam_example extends LinearOpMode
         }
         resetEncoder();
         elevator.setPower(0);
-        double actualPosition = getYCentimeters();
+        /*double actualPosition = getYCentimeters();
         resetEncoder();
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
         telemetry.update();
         drive.setWeightedDrivePower(new Pose2d(0,0,1.0));
-        while (getYCentimeters()<turnDistance1){
-            double error = (turnDistance1-getYCentimeters())/(turnDistance1*2)+0.15;
+        while (getYCentimeters()<turnDistance){
+            double error = (turnDistance-getYCentimeters())/(turnDistance*2)+0.15;
             drive.setWeightedDrivePower(new Pose2d(0,0,-error));
             telemetry.addData("Encoder",getYCentimeters());
             telemetry.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+
+         */
+        path = new Pose2d(0,0,-1.0);
+        drive.setWeightedDrivePower(path);
+        double turn1 = 80;
+        double error = (turn1 - getRobotHeading())/(turn1*2)+0.15;
+        while (getRobotHeading()>-turn1)
+        {
+            drive.setWeightedDrivePower(new Pose2d(0,0,-error));
+            drive.update();
+        }
+        drive.setWeightedDrivePower(new Pose2d(0,0,0));
         resetEncoder();
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
@@ -311,20 +332,52 @@ public class teste_cam_example extends LinearOpMode
             path = new Pose2d(calculateP(getXCentimeter(),x4),0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
+            if(getYCentimeters()>0.1){
+                new Pose2d(0,0.2,0);
+            }
+            if(elevator.getCurrentPosition()>3000) {
+                elevator.setPower(0.4);
+            }
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+        while(elevator.getCurrentPosition()<3000){
+            elevator.setPower(0.7);
+        }
+        elevator.setPower(0.2);
         resetEncoder();
+        /*
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
         telemetry.update();
-        drive.setWeightedDrivePower(new Pose2d(0,0,1.0));
-        while (getYCentimeters()>turnDistance2){
-            double error = (turnDistance2-Math.abs(getYCentimeters()))/(turnDistance2*2)+0.15;
-            drive.setWeightedDrivePower(new Pose2d(0,0,-error));
+        drive.setWeightedDrivePower(new Pose2d(0,0,-1.0));
+        while (getYCentimeters()>-turnDistance){
+            double error = (turnDistance-Math.abs(getYCentimeters()))/(turnDistance*2)+0.15;
+            drive.setWeightedDrivePower(new Pose2d(0,0,error));
             telemetry.addData("Encoder",getYCentimeters());
             telemetry.update();
 
+        }
+        resetEncoder();
+
+         */
+        path = new Pose2d(0,0,0.4);
+        drive.setWeightedDrivePower(path);
+        double initialHeadingPosition = 0;
+        while (getRobotHeading()<initialHeadingPosition){
+            double error2 = (initialHeadingPosition - getRobotHeading())/(initialHeadingPosition*2)+0.15;
+            drive.setWeightedDrivePower(new Pose2d(0,0,error2));
+            drive.update();
+        }
+        drive.setWeightedDrivePower(new Pose2d(0,0,0));
+        drive.update();
+        path = new Pose2d(0.4,0,0);
+        drive.setWeightedDrivePower(path);
+        drive.update();
+        while(getXCentimeter()<Math.abs(x2)){
+            path = new Pose2d(calculateP(getXCentimeter(),x2),0,0);
+            drive.setWeightedDrivePower(path);
+            drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
