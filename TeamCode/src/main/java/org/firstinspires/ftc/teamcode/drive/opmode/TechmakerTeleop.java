@@ -141,7 +141,7 @@ public class TechmakerTeleop extends LinearOpMode {
 
             telemetry.addData("x", getXCentimeter());
             telemetry.addData("y", getYCentimeters());
-            telemetry.addData("heading", getYCentimeters());
+            telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.addData("Intake", intake1.getPower());
             telemetry.addData("Distance",Distance);
             telemetry.update();

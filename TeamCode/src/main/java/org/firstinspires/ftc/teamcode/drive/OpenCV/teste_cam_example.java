@@ -90,8 +90,8 @@ public class teste_cam_example extends LinearOpMode
 
 
     AprilTagDetection tagOfInterest = null;
-    public static final double x1 = 126, x2 = 5, x3 = -6.9, x4 = -82;
-    public static final double y1 = 24, yLeft = -33, yMiddle = 30, yRight = 80;
+    public static final double x1 = 125, x2 = 3, x3 = -6.5, x4 = -85;
+    public static final double y1 = 24.5, yLeft = -33, yMiddle = 30, yRight = 80;
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -231,8 +231,7 @@ public class teste_cam_example extends LinearOpMode
         drive.setWeightedDrivePower(path);
         drive.update();
          while(getXCentimeter()<Math.abs(x2)){
-             path = new Pose2d(calculateP(getXCentimeter(),x2),0,0);
-            drive.setWeightedDrivePower(path);
+             drive.setWeightedDrivePower(new Pose2d(0.4,0,0));
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
@@ -252,10 +251,6 @@ public class teste_cam_example extends LinearOpMode
             path = new Pose2d(calculateP(getXCentimeter(),x3),0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
-            if(getRobotHeading()>0.1){
-                drive.setMotorPowers(0,0,0,0);
-
-            }
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
@@ -285,7 +280,7 @@ public class teste_cam_example extends LinearOpMode
          */
         path = new Pose2d(0,0,-1.0);
         drive.setWeightedDrivePower(path);
-        double turn1 = 80;
+        double turn1 = 76;
         double error = (turn1 - getRobotHeading())/(turn1*2)+0.01;
         while (getRobotHeading()>-turn1)
         {
@@ -340,10 +335,10 @@ public class teste_cam_example extends LinearOpMode
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
-        while(elevator.getCurrentPosition()<3000){
+        while(elevator.getCurrentPosition()<2700){
             elevator.setPower(0.7);
         }
-        elevator.setPower(0);
+        elevator.setPower(0.2);
         /*
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
@@ -361,23 +356,46 @@ public class teste_cam_example extends LinearOpMode
          */
         path = new Pose2d(0,0,0.4);
         drive.setWeightedDrivePower(path);
-        double initialHeadingPosition = 0;
+        double initialHeadingPosition = -3;
         while (getRobotHeading()<initialHeadingPosition){
             drive.setWeightedDrivePower(new Pose2d(0,0,0.4));
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+        resetEncoder();
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
         drive.update();
         while(getXCentimeter()<Math.abs(x2)){
-            path = new Pose2d(calculateP(getXCentimeter(),x2),0,0);
+            path = new Pose2d(0.4,0,0);
             drive.setWeightedDrivePower(path);
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+        intake1.setPower(4);
+        intake2.setPower(-4);
+        sleep(1000);
+        intake1.setPower(0);
+        intake2.setPower(0);
+        path = new Pose2d(-0.4,0,0);
+        drive.setWeightedDrivePower(path);
+        drive.update();
+        double x5 = -6;
+        while (getXCentimeter()<Math.abs(x5)){
+            elevator.setPower(0);
+            path = new Pose2d(calculateP(getXCentimeter(),x5),0,0);
+            drive.setWeightedDrivePower(path);
+            drive.update();
+        }
+        drive.setWeightedDrivePower(new Pose2d(0,0,0));
+        drive.update();
+        elevator.setPower(-0.7);
+        while (elevator.getCurrentPosition()>10){
+            elevator.setPower(-0.7);
+        }
+        elevator.setPower(0);
 
 
 
