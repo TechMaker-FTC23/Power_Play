@@ -55,7 +55,7 @@ import org.firstinspires.ftc.teamcode.drive.TwoWheelTrackingLocalizer;
 import java.util.ArrayList;
 
 @Autonomous
-public class teste_cam_example extends LinearOpMode
+public class autonomo_Esquerdo extends LinearOpMode
 {
     DcMotor xMotor;
     DcMotor yMotor;
@@ -91,7 +91,7 @@ public class teste_cam_example extends LinearOpMode
 
     AprilTagDetection tagOfInterest = null;
     public static final double x1 = 125, x2 = 3, x3 = -6.5, x4 = -85, x5 = -6;
-    public static final double y1 = 24.5, yLeft = 33, yMiddle = -30, yRight = -80;
+    public static final double y1 = -24.5, yLeft = 33, yMiddle = -30, yRight = -80;
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -230,8 +230,8 @@ public class teste_cam_example extends LinearOpMode
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
         drive.update();
-         while(getXCentimeter()<Math.abs(x2)){
-             drive.setWeightedDrivePower(new Pose2d(0.4,0,0));
+        while(getXCentimeter()<Math.abs(x2)){
+            drive.setWeightedDrivePower(new Pose2d(0.4,0,0));
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
@@ -278,11 +278,11 @@ public class teste_cam_example extends LinearOpMode
         drive.update();
 
          */
-        path = new Pose2d(0,0,-1.0);
+        path = new Pose2d(0,0,1.0);
         drive.setWeightedDrivePower(path);
-        double turn1 = 76;
+        double turn1 = -76;
         double error = (turn1 - getRobotHeading())/(turn1*2)+0.01;
-        while (getRobotHeading()>-turn1)
+        while (getRobotHeading()>turn1)
         {
             drive.setWeightedDrivePower(new Pose2d(0,0,-error));
             drive.update();
@@ -338,7 +338,7 @@ public class teste_cam_example extends LinearOpMode
         while(elevator.getCurrentPosition()<2700){
             elevator.setPower(0.7);
         }
-        elevator.setPower(0);
+        elevator.setPower(0.2);
         /*
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
@@ -379,7 +379,6 @@ public class teste_cam_example extends LinearOpMode
         sleep(1000);
         intake1.setPower(0);
         intake2.setPower(0);
-        resetEncoder();
         path = new Pose2d(-0.4,0,0);
         drive.setWeightedDrivePower(path);
         drive.update();
@@ -408,11 +407,10 @@ public class teste_cam_example extends LinearOpMode
             if (tagOfInterest.id == left) {
                 telemetry.addData("Direction", "left");
                 telemetry.update();
-                drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
-                while(getYCentimeters()<yLeft)
+                drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
+                while(getYCentimeters()<y1+yLeft)
                 {
-                    path = new Pose2d(0,calculateP(getYCentimeters(),yLeft),0) ;
-                    drive.setWeightedDrivePower(path);
+                    drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
                     drive.update();
                 }
 
@@ -423,20 +421,22 @@ public class teste_cam_example extends LinearOpMode
             } else if ( tagOfInterest.id == middle) {
                 telemetry.addData("Direction", "front");
                 telemetry.update();
-                drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
-                while(getYCentimeters()>yMiddle)
+                drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
+                while(getYCentimeters()>y1+yMiddle)
                 {
-                    path = new Pose2d(0,calculateP(getYCentimeters(),yMiddle),0);
-                    drive.setWeightedDrivePower(path);
+                    drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
+                    drive.update();
                 }
+
+                drive.setWeightedDrivePower(new Pose2d(0,0,0));
+
             } else if (tagOfInterest.id == right) {
                 telemetry.addData("Direction", "right");
                 telemetry.update();
-                drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
-                while(getYCentimeters()>yRight)
+                drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
+                while(getYCentimeters()>y1+yRight)
                 {
-                    path = new Pose2d(0,calculateP(getYCentimeters(),yRight),0);
-                    drive.setWeightedDrivePower(path);
+                    drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
                 }
             }
         } else {
@@ -445,6 +445,7 @@ public class teste_cam_example extends LinearOpMode
         }
 
         /* Actually do something useful */
+
         drive.setWeightedDrivePower(new Pose2d(0, 0, 0));
         drive.update();
         /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
