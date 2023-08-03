@@ -90,7 +90,7 @@ public class teste_cam_example extends LinearOpMode
 
 
     AprilTagDetection tagOfInterest = null;
-    public static final double x1 = 125, x2 = 3, x3 = -6.5, x4 = -85, x5 = -6;
+    public static final double x1 = 125, x2 = 4, x3 = -5, x4 = -85, x5 = -6;
     public static final double y1 = 24.5, yLeft = 33, yMiddle = -30, yRight = -80;
     @Override
     public void runOpMode() {
@@ -222,7 +222,7 @@ public class teste_cam_example extends LinearOpMode
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
 
-        while(elevator.getCurrentPosition()<3600){
+        while(elevator.getCurrentPosition()<3650){
             elevator.setPower(0.7);
         }
         elevator.setPower(0.02);
@@ -329,9 +329,6 @@ public class teste_cam_example extends LinearOpMode
             if(getYCentimeters()>0.1){
                 new Pose2d(0,0.2,0);
             }
-            if(elevator.getCurrentPosition()>3000) {
-                elevator.setPower(0.2);
-            }
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
@@ -374,6 +371,7 @@ public class teste_cam_example extends LinearOpMode
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+        sleep(1000);
         intake1.setPower(4);
         intake2.setPower(-4);
         sleep(1000);
@@ -392,7 +390,7 @@ public class teste_cam_example extends LinearOpMode
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
         elevator.setPower(-0.7);
-        while (elevator.getCurrentPosition()>-200){
+        while (elevator.getCurrentPosition()>-600){
             elevator.setPower(-0.7);
         }
         elevator.setPower(0);

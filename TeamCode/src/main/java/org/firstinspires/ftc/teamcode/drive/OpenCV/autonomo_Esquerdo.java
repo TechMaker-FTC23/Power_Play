@@ -90,8 +90,8 @@ public class autonomo_Esquerdo extends LinearOpMode
 
 
     AprilTagDetection tagOfInterest = null;
-    public static final double x1 = 125, x2 = 3, x3 = -6.5, x4 = -85, x5 = -6;
-    public static final double y1 = -24.5, yLeft = 33, yMiddle = -30, yRight = -80;
+    public static final double x1 = 125, x2 = 4, x3 = -5, x4 = -85, x5 = -6;
+    public static final double y1 = -25, yLeft = 80, yMiddle = 30, yRight = -33;
     @Override
     public void runOpMode() {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -199,7 +199,7 @@ public class autonomo_Esquerdo extends LinearOpMode
         }
         drive.setWeightedDrivePower(new Pose2d(0, 0, 0));
         resetEncoder();
-        path = new Pose2d(0,0.4,0);
+        path = new Pose2d(0,-0.4,0);
         drive.setWeightedDrivePower(path);
         int elevatorPosition = 3600;
         elevator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -222,7 +222,7 @@ public class autonomo_Esquerdo extends LinearOpMode
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
 
-        while(elevator.getCurrentPosition()<3600){
+        while(elevator.getCurrentPosition()<3650){
             elevator.setPower(0.7);
         }
         elevator.setPower(0.02);
@@ -278,17 +278,18 @@ public class autonomo_Esquerdo extends LinearOpMode
         drive.update();
 
          */
-        path = new Pose2d(0,0,1.0);
+        path = new Pose2d(0,0,0.4);
         drive.setWeightedDrivePower(path);
-        double turn1 = -76;
+        double turn1 = 80;
         double error = (turn1 - getRobotHeading())/(turn1*2)+0.01;
-        while (getRobotHeading()>turn1)
+        while (getRobotHeading()<turn1)
         {
-            drive.setWeightedDrivePower(new Pose2d(0,0,-error));
+            drive.setWeightedDrivePower(new Pose2d(0,0,error));
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         resetEncoder();
+
         path = new Pose2d(0.4,0,0);
         drive.setWeightedDrivePower(path);
         double wallDistance = 280;
@@ -329,16 +330,13 @@ public class autonomo_Esquerdo extends LinearOpMode
             if(getYCentimeters()>0.1){
                 new Pose2d(0,0.2,0);
             }
-            if(elevator.getCurrentPosition()>3000) {
-                elevator.setPower(0.2);
-            }
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
         while(elevator.getCurrentPosition()<2700){
             elevator.setPower(0.7);
         }
-        elevator.setPower(0.2);
+        elevator.setPower(0);
         /*
         telemetry.clearAll();
         telemetry.addData("Encoder",getYCentimeters());
@@ -351,14 +349,15 @@ public class autonomo_Esquerdo extends LinearOpMode
             telemetry.update();
 
         }
-        resetEncoder();
 
          */
-        path = new Pose2d(0,0,0.4);
+        resetEncoder();
+
+        path = new Pose2d(0,0,-0.4);
         drive.setWeightedDrivePower(path);
-        double initialHeadingPosition = -3;
-        while (getRobotHeading()<initialHeadingPosition){
-            drive.setWeightedDrivePower(new Pose2d(0,0,0.4));
+        double initialHeadingPosition = 3;
+        while (getRobotHeading()>initialHeadingPosition){
+            drive.setWeightedDrivePower(new Pose2d(0,0,-0.4));
             drive.update();
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
@@ -374,11 +373,13 @@ public class autonomo_Esquerdo extends LinearOpMode
         }
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
+        sleep(1000);
         intake1.setPower(4);
         intake2.setPower(-4);
         sleep(1000);
         intake1.setPower(0);
         intake2.setPower(0);
+        resetEncoder();
         path = new Pose2d(-0.4,0,0);
         drive.setWeightedDrivePower(path);
         drive.update();
@@ -391,11 +392,10 @@ public class autonomo_Esquerdo extends LinearOpMode
         drive.setWeightedDrivePower(new Pose2d(0,0,0));
         drive.update();
         elevator.setPower(-0.7);
-        while (elevator.getCurrentPosition()>-200){
+        while (elevator.getCurrentPosition()>-600){
             elevator.setPower(-0.7);
         }
         elevator.setPower(0);
-
 
 
         //codigo para ir para esquerda colocar o cone
@@ -407,10 +407,11 @@ public class autonomo_Esquerdo extends LinearOpMode
             if (tagOfInterest.id == left) {
                 telemetry.addData("Direction", "left");
                 telemetry.update();
-                drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
-                while(getYCentimeters()<y1+yLeft)
+                drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
+                while(getYCentimeters()<yLeft)
                 {
-                    drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
+                    path = new Pose2d(0,calculateP(getYCentimeters(),yLeft),0) ;
+                    drive.setWeightedDrivePower(path);
                     drive.update();
                 }
 
@@ -422,21 +423,20 @@ public class autonomo_Esquerdo extends LinearOpMode
                 telemetry.addData("Direction", "front");
                 telemetry.update();
                 drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
-                while(getYCentimeters()>y1+yMiddle)
+                while(getYCentimeters()<yMiddle)
                 {
-                    drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
+                    path = new Pose2d(0,calculateP(getYCentimeters(),yMiddle),0);
+                    drive.setWeightedDrivePower(path);
                     drive.update();
                 }
-
-                drive.setWeightedDrivePower(new Pose2d(0,0,0));
-
             } else if (tagOfInterest.id == right) {
                 telemetry.addData("Direction", "right");
                 telemetry.update();
-                drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
-                while(getYCentimeters()>y1+yRight)
+                drive.setWeightedDrivePower(new Pose2d(0,0.4,0));
+                while(getYCentimeters()>yRight)
                 {
-                    drive.setWeightedDrivePower(new Pose2d(0,-0.4,0));
+                    path = new Pose2d(0,calculateP(getYCentimeters(),yRight),0);
+                    drive.setWeightedDrivePower(path);
                 }
             }
         } else {
@@ -445,7 +445,6 @@ public class autonomo_Esquerdo extends LinearOpMode
         }
 
         /* Actually do something useful */
-
         drive.setWeightedDrivePower(new Pose2d(0, 0, 0));
         drive.update();
         /* You wouldn't have this in your autonomous, this is just to prevent the sample from ending */
